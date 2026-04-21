@@ -21,27 +21,27 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Fix gradlew permissions
+      - name: Remove old gradlew
+        run: rm -f TuneUp-Android-Project/android-project/gradlew
+
+      - name: Generate new Gradle wrapper
         run: |
           cd TuneUp-Android-Project/android-project
-          chmod +x gradlew
-          dos2unix gradlew || true
-          head -5 gradlew
+          gradle wrapper --gradle-version=8.5
 
-      - name: Create gradle.properties
-        run: |
-          echo "org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m" > TuneUp-Android-Project/android-project/gradle.properties
+      - name: Make gradlew executable
+        run: chmod +x TuneUp-Android-Project/android-project/gradlew
 
       - name: Create local.properties
         run: |
           echo "sdk.dir=$ANDROID_SDK_ROOT" > TuneUp-Android-Project/android-project/local.properties
 
-      - name: Build Debug
+      - name: Build Debug APK
         run: |
           cd TuneUp-Android-Project/android-project
           ./gradlew clean assembleDebug
 
-      - name: Build Release
+      - name: Build Release APK
         run: |
           cd TuneUp-Android-Project/android-project
           ./gradlew assembleRelease
