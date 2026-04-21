@@ -21,24 +21,20 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Remove old gradlew
-        run: rm -f TuneUp-Android-Project/android-project/gradlew
-
-      - name: Generate new Gradle wrapper
+      - name: Create gradle.properties
         run: |
           cd TuneUp-Android-Project/android-project
-          gradle wrapper --gradle-version=8.5
+          echo "org.gradle.jvmargs=-Xmx2048m" >> gradle.properties
+          echo "android.useAndroidX=true" >> gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
 
       - name: Make gradlew executable
         run: chmod +x TuneUp-Android-Project/android-project/gradlew
 
-            - name: Create gradle.properties
+      - name: Create local.properties
         run: |
-          cat > TuneUp-Android-Project/android-project/gradle.properties << EOF
-org.gradle.jvmargs=-Xmx2048m
-android.useAndroidX=true
-android.enableJetifier=true
-EOF
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > TuneUp-Android-Project/android-project/local.properties
+
       - name: Build Debug APK
         run: |
           cd TuneUp-Android-Project/android-project
