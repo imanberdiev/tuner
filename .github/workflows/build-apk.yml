@@ -32,10 +32,13 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x TuneUp-Android-Project/android-project/gradlew
 
-      - name: Create local.properties
+            - name: Create gradle.properties
         run: |
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > TuneUp-Android-Project/android-project/local.properties
-
+          cat > TuneUp-Android-Project/android-project/gradle.properties << EOF
+org.gradle.jvmargs=-Xmx2048m
+android.useAndroidX=true
+android.enableJetifier=true
+EOF
       - name: Build Debug APK
         run: |
           cd TuneUp-Android-Project/android-project
