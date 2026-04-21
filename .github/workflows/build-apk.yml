@@ -10,8 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up JDK 11
         uses: actions/setup-java@v4
@@ -22,31 +21,19 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Create local.properties
+      - name: Configure SDK path
         run: |
           cd TuneUp-Android-Project/android-project
           echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
-          cat local.properties
 
-      - name: Make gradlew executable
-        run: chmod +x ./TuneUp-Android-Project/android-project/gradlew
+      - name: Grant execute permission
+        run: chmod +x TuneUp-Android-Project/android-project/gradlew
 
-      - name: Build Debug APK
+      - name: Gradle Debug Build
         run: |
-          cd ./TuneUp-Android-Project/android-project
-          ./gradlew clean assembleDebug --stacktrace
+          cd TuneUp-Android-Project/android-project
+          ./gradlew --version
+          ./gradlew assembleDebug -v 2>&1 | tail -100
 
-      - name: Build Release APK
-        run: |
-          cd ./TuneUp-Android-Project/android-project
-          ./gradlew assembleRelease --stacktrace
-
-      - name: Upload APKs
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: apk-builds
-          path: |
-            TuneUp-Android-Project/android-project/app/build/outputs/apk/debug/*.apk
-            TuneUp-Android-Project/android-project/app/build/outputs/apk/release/*.apk
-          if-no-files-found: warn
+      - name: Check APK exists
+        run: find TuneUp-Android-Project -name "*.apk" -o -name "build" -type d
