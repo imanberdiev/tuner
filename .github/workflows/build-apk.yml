@@ -1,0 +1,40 @@
+name: Build APKs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Make gradlew executable
+        run: chmod +x TuneUp-Android-Project/android-project/gradlew
+
+      - name: Build Debug APK
+        run: cd TuneUp-Android-Project/android-project && ./gradlew assembleDebug
+
+      - name: Build Release APK
+        run: cd TuneUp-Android-Project/android-project && ./gradlew assembleRelease
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: debug-apk
+          path: TuneUp-Android-Project/android-project/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-apk
+          path: TuneUp-Android-Project/android-project/app/build/outputs/apk/release/app-release.apk
