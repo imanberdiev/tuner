@@ -8,8 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Check out code
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up JDK 11
@@ -20,26 +21,27 @@ jobs:
 
       - name: Make gradlew executable
         run: chmod +x ./TuneUp-Android-Project/android-project/gradlew
-        shell: bash
 
       - name: Build Debug APK
-        working-directory: ./TuneUp-Android-Project/android-project
-        run: ./gradlew clean assembleDebug
+        run: |
+          cd ./TuneUp-Android-Project/android-project
+          ./gradlew clean
+          ./gradlew assembleDebug -v
 
       - name: Build Release APK
-        working-directory: ./TuneUp-Android-Project/android-project
-        run: ./gradlew assembleRelease
+        run: |
+          cd ./TuneUp-Android-Project/android-project
+          ./gradlew assembleRelease -v
 
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: debug-apk
-          path: TuneUp-Android-Project/android-project/app/build/outputs/apk/debug/
+      - name: Check build outputs
+        run: |
+          find ./TuneUp-Android-Project/android-project -name "*.apk" -type f
 
-      - name: Upload Release APK
+      - name: Upload APKs
         uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: release-apk
-          path: TuneUp-Android-Project/android-project/app/build/outputs/apk/release/
+          name: apk-builds
+          path: |
+            TuneUp-Android-Project/android-project/app/build/outputs/apk/debug/*.apk
+            TuneUp-Android-Project/android-project/app/build/outputs/apk/release/*.apk
+          if-no-files-found: warn
