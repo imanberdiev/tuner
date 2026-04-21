@@ -27,7 +27,6 @@ jobs:
       - name: Download fresh Gradle wrapper
         run: |
           cd TuneUp-Android-Project/android-project
-          wget -q https://raw.githubusercontent.com/gradle/gradle/master/gradle/wrapper/gradle-wrapper.properties -O gradle/wrapper/gradle-wrapper.properties 2>/dev/null || true
           gradle wrapper --gradle-version 8.5 --distribution-type bin
 
       - name: Make gradlew executable
@@ -36,11 +35,9 @@ jobs:
       - name: Create gradle.properties
         run: |
           cd TuneUp-Android-Project/android-project
-          cat >> gradle.properties << 'EOF'
-org.gradle.jvmargs=-Xmx2048m
-android.useAndroidX=true
-android.enableJetifier=true
-EOF
+          echo "org.gradle.jvmargs=-Xmx2048m" >> gradle.properties
+          echo "android.useAndroidX=true" >> gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
 
       - name: Create local.properties
         run: echo "sdk.dir=$ANDROID_SDK_ROOT" > TuneUp-Android-Project/android-project/local.properties
