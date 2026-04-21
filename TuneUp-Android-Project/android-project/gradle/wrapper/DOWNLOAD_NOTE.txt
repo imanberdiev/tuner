@@ -1,0 +1,4 @@
+gradle-wrapper.jar is NOT included in this repository.
+GitHub Actions will download it automatically via gradle/actions/setup-gradle.
+For local builds: Android Studio will download it automatically when you open the project.
+Or run: ./setup_gradle_wrapper.sh
