@@ -19,26 +19,31 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Create local.properties
+        run: |
+          cd TuneUp-Android-Project/android-project
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+          cat local.properties
+
       - name: Make gradlew executable
         run: chmod +x ./TuneUp-Android-Project/android-project/gradlew
 
       - name: Build Debug APK
         run: |
           cd ./TuneUp-Android-Project/android-project
-          ./gradlew clean
-          ./gradlew assembleDebug -v
+          ./gradlew clean assembleDebug --stacktrace
 
       - name: Build Release APK
         run: |
           cd ./TuneUp-Android-Project/android-project
-          ./gradlew assembleRelease -v
-
-      - name: Check build outputs
-        run: |
-          find ./TuneUp-Android-Project/android-project -name "*.apk" -type f
+          ./gradlew assembleRelease --stacktrace
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: apk-builds
           path: |
