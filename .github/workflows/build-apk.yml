@@ -21,19 +21,29 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Create gradle.properties
+      - name: Delete corrupted gradlew
+        run: rm -f TuneUp-Android-Project/android-project/gradlew TuneUp-Android-Project/android-project/gradlew.bat
+
+      - name: Download fresh Gradle wrapper
         run: |
           cd TuneUp-Android-Project/android-project
-          echo "org.gradle.jvmargs=-Xmx2048m" >> gradle.properties
-          echo "android.useAndroidX=true" >> gradle.properties
-          echo "android.enableJetifier=true" >> gradle.properties
+          wget -q https://raw.githubusercontent.com/gradle/gradle/master/gradle/wrapper/gradle-wrapper.properties -O gradle/wrapper/gradle-wrapper.properties 2>/dev/null || true
+          gradle wrapper --gradle-version 8.5 --distribution-type bin
 
       - name: Make gradlew executable
         run: chmod +x TuneUp-Android-Project/android-project/gradlew
 
-      - name: Create local.properties
+      - name: Create gradle.properties
         run: |
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > TuneUp-Android-Project/android-project/local.properties
+          cd TuneUp-Android-Project/android-project
+          cat >> gradle.properties << 'EOF'
+org.gradle.jvmargs=-Xmx2048m
+android.useAndroidX=true
+android.enableJetifier=true
+EOF
+
+      - name: Create local.properties
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > TuneUp-Android-Project/android-project/local.properties
 
       - name: Build Debug APK
         run: |
