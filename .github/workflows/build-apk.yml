@@ -20,21 +20,31 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          skip-validation: true
 
-      - name: Make gradlew executable
+      - name: Fix gradlew permissions
         run: |
-          chmod +x ./TuneUp-Android-Project/android-project/gradlew
+          cd TuneUp-Android-Project/android-project
+          chmod +x gradlew
+          dos2unix gradlew || true
+          head -5 gradlew
+
+      - name: Create gradle.properties
+        run: |
+          echo "org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m" > TuneUp-Android-Project/android-project/gradle.properties
 
       - name: Create local.properties
         run: |
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > ./TuneUp-Android-Project/android-project/local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > TuneUp-Android-Project/android-project/local.properties
 
-      - name: Build APK
+      - name: Build Debug
         run: |
-          cd ./TuneUp-Android-Project/android-project
-          ./gradlew assembleDebug assembleRelease
+          cd TuneUp-Android-Project/android-project
+          ./gradlew clean assembleDebug
+
+      - name: Build Release
+        run: |
+          cd TuneUp-Android-Project/android-project
+          ./gradlew assembleRelease
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
